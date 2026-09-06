@@ -16,7 +16,7 @@ export function ExperienceList({ data }: { data: Experience[] }) {
 
   return (
     <>
-      <ul ref={list} className="border-t border-dark/12 md:cursor-none">
+      <ul ref={list} className="border-t border-dark/12">
         {data.map(({ place, role, period, details }, i) => {
           const open = openIndex === i;
           const id = `${panelId}-${i}`;
@@ -29,7 +29,7 @@ export function ExperienceList({ data }: { data: Experience[] }) {
                   onClick={() => setOpenIndex(open ? null : i)}
                   aria-expanded={open}
                   aria-controls={id}
-                  className="exp-row group relative flex w-full flex-col items-start gap-1.5 py-7 text-left sm:flex-row sm:items-baseline sm:gap-6 md:cursor-none md:gap-10 md:py-9"
+                  className="exp-row group relative flex w-full flex-col items-start gap-1.5 py-7 text-left sm:flex-row sm:items-baseline sm:gap-6 md:gap-10 md:py-9"
                 >
                   <InViewGate className="min-w-0 flex-1">
                     <ClipRise

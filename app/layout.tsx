@@ -15,10 +15,43 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const SITE = "https://ancungaulia.dev";
+const DESCRIPTION =
+  "Portfolio of Aulia Nur Fajri, a software, mobile, and Web3 developer.";
+
 export const metadata: Metadata = {
-  title: "ancungaulia's portfolio",
-  description:
-    "Portfolio of Aulia Nur Fajri, a software, mobile, and Web3 developer.",
+  /* Every other metadata URL resolves against this. Without it the share image
+     below stays a relative path, which no crawler can fetch. */
+  metadataBase: new URL(SITE),
+
+  title: {
+    default: "ancungaulia's portfolio",
+    // Inner pages set a bare title ("About"), which reads as broken once it is
+    // the headline of a shared link.
+    template: "%s — ancungaulia",
+  },
+  description: DESCRIPTION,
+
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "ancungaulia",
+    title: "ancungaulia's portfolio",
+    description: DESCRIPTION,
+    images: [
+      {
+        url: "/metadata/image.png",
+        width: 1918,
+        height: 1198,
+        alt: "Crafting products, shaping experiences — Aulia Nur Fajri",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    creator: "@ancoenggg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

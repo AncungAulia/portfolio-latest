@@ -529,6 +529,19 @@ html.intro-js [data-rise="inview"][data-seen] .card-zoom {
   }
 }
 
+/* Set by OpenCursor while the disc is up, and removed the moment it goes.
+
+   An attribute rather than a static `cursor-none` class: a class keeps applying
+   for as long as the browser believes the pointer is over the list, and after a
+   programmatic scroll (Lenis) that belief is stale, so the arrow stayed hidden
+   until the mouse moved. The descendant selector is not optional either — the
+   UA stylesheet gives <button> its own `cursor`, which inheritance alone cannot
+   override, and the arrow would sit on top of the disc. */
+[data-cursor-hidden],
+[data-cursor-hidden] * {
+  cursor: none;
+}
+
 /* The OPEN/CLOSE cursor only exists for a fine pointer, so on a touch screen
    nothing said these rows open at all. The chevron is that hint. It keys off the
    same query the cursor does rather than a width breakpoint, so a narrow desktop

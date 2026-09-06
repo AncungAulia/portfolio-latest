@@ -37,6 +37,14 @@ export function OpenCursor({ area, label }: KursorBukaProps) {
     const el = area.current;
     if (!el || !finePointer) return;
 
+    let showing = false;
+
+    // Drives [data-cursor-hidden] in globals.css. Toggled here, not left to a
+    // static class, so the arrow comes back the moment the disc does.
+    const nativeCursor = (hidden: boolean) => {
+      el.toggleAttribute("data-cursor-hidden", hidden);
+    };
+
     const onMove = (e: PointerEvent) => {
       target.current = { x: e.clientX, y: e.clientY };
     };
@@ -51,26 +59,50 @@ export function OpenCursor({ area, label }: KursorBukaProps) {
       if (pivot.current) {
         pivot.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       }
+      showing = true;
+      nativeCursor(true);
       setHidup(true);
       setTerlihat(true);
     };
 
     const onLeave = () => {
+      if (!showing) return;
+      showing = false;
+      nativeCursor(false);
       setTerlihat(false);
       if (fadeTimer.current !== null) window.clearTimeout(fadeTimer.current);
       fadeTimer.current = window.setTimeout(() => setHidup(false), FADE_MS);
+    };
+
+    /* Scrolling the list out from under a still mouse fires no pointerleave:
+       the pointer never moved, so the browser keeps the old hover target and
+       the disc was left floating over the next section. The pointer position is
+       still valid during a scroll, so re-test it against the list instead.
+
+       One direction only. Scrolling back cannot re-show it, because while the
+       cursor is outside the list no event reports where the mouse went, and
+       re-entering on a stale position would put the disc somewhere the pointer
+       is not. A real pointerenter handles that case anyway. */
+    const onScroll = () => {
+      if (!showing) return;
+      const r = el.getBoundingClientRect();
+      const { x, y } = target.current;
+      if (x < r.left || x > r.right || y < r.top || y > r.bottom) onLeave();
     };
 
     el.addEventListener("pointerenter", onEnter);
     el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerleave", onLeave);
     window.addEventListener("blur", onLeave);
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       el.removeEventListener("pointerenter", onEnter);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("blur", onLeave);
+      window.removeEventListener("scroll", onScroll);
+      el.removeAttribute("data-cursor-hidden");
       if (fadeTimer.current !== null) window.clearTimeout(fadeTimer.current);
     };
   }, [area, finePointer]);
