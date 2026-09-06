@@ -1,0 +1,56 @@
+
+@theme {
+  --color-neutral-50: #ffffff;
+  --color-neutral-100: #ffffff;
+  --color-neutral-200: #f4f4f4;
+  --color-neutral-300: #eaeaea;
+  --color-neutral-400: #e1e1e1;
+  --color-neutral-450: #d8d8d8;
+  --color-neutral-475: #b8b8b8;
+  --color-neutral-500: #817f7f;
+  --color-neutral-525: #4f4c4c;
+  --color-neutral-550: #393636;
+  --color-neutral-600: #312e2e;
+  --color-neutral-700: #2a2727;
+  --color-neutral-800: #201d1d;
+  --color-neutral-900: #151313;
+  --color-neutral-950: #000000;
+
+  --color-light: #f4f4f4;
+  --color-dark: #201d1d;
+
+  /* Permukaan ketiga, ditambahkan 2026-09-06. Dipakai section about sebagai */
+  --color-sand: #efe8e0;
+
+  --color-butter: #fff1b5;
+  --color-blush: #ffcfcf;
+  --color-mint: #c4fdc7;
+  --color-frost: #bafbff;
+
+  --color-ember: #ffad00;
+
+  --ease-osmo: cubic-bezier(0.625, 0.05, 0, 1);
+  --ease-osmo-hover: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-osmo-click: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-osmo-bounce: linear(
+    0, 0.5737 7.6%, 0.8382 11.87%, 0.9463 14.19%, 1.0292 16.54%, 1.0886 18.97%,
+    1.1258 21.53%, 1.137 22.97%, 1.1424 24.48%, 1.1423 26.1%, 1.1366 27.86%,
+    1.1165 31.01%, 1.0507 38.62%, 1.0219 42.57%, 0.9995 46.99%, 0.9872 51.63%,
+    0.9842 58.77%, 1.0011 81.26%, 1
+  );
+}
+
+:root {
+  --duration-quarter: 0.15s;
+  --duration-half: 0.3s;
+  --duration-default: 0.6s;
+  --duration-onehalf: 0.9s;
+  --duration-double: 1.2s;
+
+  --rgb-dark: 32, 29, 29;
+  --rgb-light: 249, 249, 249;
+  --rgb-gray: 129, 127, 127;
+  --rgb-tint: 40, 40, 40;
+
+  --stroke-weight: 1px;
+}

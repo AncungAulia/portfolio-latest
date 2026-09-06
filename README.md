@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ancungaulia
 
-## Getting Started
+Personal portfolio of Aulia Nur Fajri Tri Anggoro. Software, mobile, and Web3 developer based in Yogyakarta, Indonesia.
 
-First, run the development server:
+Static site, no database and no CMS. Everything renders at build time.
+
+## Stack
+
+- Next.js 16 (App Router, Turbopack) with React 19 and TypeScript
+- Tailwind CSS v4
+- Motion for animation, Lenis for smooth scrolling
+- three + postprocessing, for the PixelBlast background in the CTA
+
+## Running it
+
+Requires Node 20.9+ and pnpm.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+pnpm build   # production build
+pnpm start   # serve the build
+pnpm lint
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Path               | What it is                         |
+| ------------------ | ---------------------------------- |
+| `/`                | Landing page, all sections         |
+| `/about`           | About in full                      |
+| `/projects`        | Every project                      |
+| `/projects/[slug]` | One project in detail              |
+| `/experience`      | Experience in full                 |
+| `/cv`              | The CV PDF, rendered in the browser |
 
-## Learn More
+## Layout
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/          routes only, no UI logic
+src/
+  modules/    page UI, one folder per page
+  components/ shared across pages (layout, motion, ui)
+  data/       all site content
+  lib/        helpers
+public/       images, icons, CV
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`app/` exists purely to render. Anything with real UI logic lives in `src/modules/`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Editing content
 
-## Deploy on Vercel
+No code changes needed for any of this. It all lives in `src/data/`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `projects.ts` — projects, and `HOME_LIMIT` sets how many show on the landing page
+- `experience.ts` — the experience accordion
+- `about.ts` — about copy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Each project gets a folder under `public/images/<slug>/` holding `main.png` (the card) and `header.png` (the detail page), pointed at by the `image` and `header` fields. A project with neither renders the work-in-progress placeholder and is left out of the arc carousel on the landing page.
+
+## Intro preloader
+
+Timings live in `src/modules/intro/intro.config.ts`. `SHOW_ON_EVERY_LOAD` controls whether it plays on every visit or once per browser session.
+
+The progress bar waits on real work: it stalls at `ceiling` until fonts and critical images have actually loaded, so 100% means something. `maxRate` caps how fast the number may move, which keeps a blocked main thread from teleporting it.
