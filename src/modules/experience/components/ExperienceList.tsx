@@ -11,14 +11,14 @@ import type { Experience } from "@/data/experience";
    Panels animate `grid-template-rows` 0fr->1fr, so no height is ever guessed. */
 export function ExperienceList({ data }: { data: Experience[] }) {
   const list = useRef<HTMLUListElement>(null);
-  const [buka, setBuka] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const panelId = useId();
 
   return (
     <>
       <ul ref={list} className="border-t border-dark/12 md:cursor-none">
         {data.map(({ place, role, period, details }, i) => {
-          const open = buka === i;
+          const open = openIndex === i;
           const id = `${panelId}-${i}`;
 
           return (
@@ -26,10 +26,10 @@ export function ExperienceList({ data }: { data: Experience[] }) {
               <h3>
                 <button
                   type="button"
-                  onClick={() => setBuka(open ? null : i)}
+                  onClick={() => setOpenIndex(open ? null : i)}
                   aria-expanded={open}
                   aria-controls={id}
-                  className="group flex w-full flex-col items-start gap-1.5 py-7 text-left sm:flex-row sm:items-baseline sm:gap-6 md:cursor-none md:gap-10 md:py-9"
+                  className="exp-row group relative flex w-full flex-col items-start gap-1.5 py-7 text-left sm:flex-row sm:items-baseline sm:gap-6 md:cursor-none md:gap-10 md:py-9"
                 >
                   <InViewGate className="min-w-0 flex-1">
                     <ClipRise
@@ -50,6 +50,27 @@ export function ExperienceList({ data }: { data: Experience[] }) {
                         className="mt-1 text-[12px] leading-[1.3] text-neutral-525 md:text-[13px]"
                       />
                     </InViewGate>
+                  </span>
+
+                  {/* `transition-[rotate]`, never `transition-transform`:
+                      Tailwind v4 writes rotate to its own CSS property. */}
+                  <span
+                    aria-hidden
+                    className="exp-chevron absolute top-1/2 right-0 -translate-y-1/2 text-dark/40"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`size-[18px] transition-[rotate] duration-300 ease-[cubic-bezier(0.4,0,0.1,1)] motion-reduce:transition-none ${
+                        open ? "rotate-180" : ""
+                      }`}
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
                   </span>
                 </button>
               </h3>
@@ -75,7 +96,7 @@ export function ExperienceList({ data }: { data: Experience[] }) {
         })}
       </ul>
 
-      <OpenCursor area={list} label={buka === null ? "OPEN" : "CLOSE"} />
+      <OpenCursor area={list} label={openIndex === null ? "OPEN" : "CLOSE"} />
     </>
   );
 }

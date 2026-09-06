@@ -183,9 +183,20 @@ html.intro-js [data-rise="inview"][data-seen] .clip-rise > span {
   initial-value: 0px;
 }
 
-.navbar-bar {
+/* Owns --detach and reserves the same distance below the bar.
+
+   The bar translates down when it detaches, which pushes it past the header's
+   box. Chrome applies `overflow-x: clip` to the X axis only, so the overhang
+   still paints, but WebKit clips both axes: on iOS the capsule lost its rounded
+   bottom and read as cut off flat. Reserving the distance as padding keeps the
+   bar inside its container in every browser. */
+.navbar-shell {
   --detach: 10px;
 
+  padding-bottom: var(--detach);
+}
+
+.navbar-bar {
   transition:
     translate 340ms cubic-bezier(0.4, 0, 0.1, 1) 0ms,
     border-radius 340ms cubic-bezier(0.4, 0, 0.1, 1) 0ms,
@@ -193,7 +204,7 @@ html.intro-js [data-rise="inview"][data-seen] .clip-rise > span {
 }
 
 @media (min-width: 48rem) {
-  .navbar-bar {
+  .navbar-shell {
     --detach: 14px;
   }
 }
@@ -224,19 +235,25 @@ html.intro-js [data-rise="inview"][data-seen] .clip-rise > span {
 
 /* Hero portrait background — src/modules/home/components/Portrait.tsx */
 
+/* `dvh`, not `vh`. The hero container is `min-h-dvh`, and on iOS Safari `vh`
+   means the LARGE viewport (address bar hidden) while `dvh` is what is actually
+   on screen. Sized in `vh` these two boxes were taller than their container, so
+   the text block ran past its half and the View CV button landed on the
+   portrait's hair. Same unit as the container is the only way they stay in
+   step; on desktop the two units are equal, so nothing there moves. */
 :root {
   --portrait-scale: 0.9;
 
-  --portrait-height: 50vh;
-  --hero-text: 50vh;
+  --portrait-height: 50dvh;
+  --hero-text: 50dvh;
 
   --portrait-width: calc(var(--portrait-height) * 2384 / 2048);
 }
 
 @media (min-height: 50rem) {
   :root {
-    --portrait-height: 60vh;
-    --hero-text: 40vh;
+    --portrait-height: 60dvh;
+    --hero-text: 40dvh;
   }
 }
 
@@ -509,6 +526,25 @@ html.intro-js [data-rise="inview"][data-seen] .card-zoom {
 @media (prefers-reduced-motion: reduce) {
   .exp-panel {
     transition: none;
+  }
+}
+
+/* The OPEN/CLOSE cursor only exists for a fine pointer, so on a touch screen
+   nothing said these rows open at all. The chevron is that hint. It keys off the
+   same query the cursor does rather than a width breakpoint, so a narrow desktop
+   window keeps the cursor and a large tablet still gets the chevron. */
+.exp-chevron {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .exp-chevron {
+    display: block;
+  }
+
+  /* Keeps a long place name from running under the chevron. */
+  .exp-row {
+    padding-right: 2.25rem;
   }
 }
 

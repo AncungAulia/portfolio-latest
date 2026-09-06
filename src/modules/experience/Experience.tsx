@@ -29,14 +29,14 @@ export function Experience() {
             </InViewGate>
 
             <ul className="mt-7 flex flex-col md:mt-9">
-              {ACHIEVEMENTS.map(({ fg, tahun }) => (
+              {ACHIEVEMENTS.map(({ label, year }) => (
                 <li
-                  key={fg}
+                  key={label}
                   className="flex flex-col gap-1 border-b border-dark/12 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
                 >
-                  <span className="text-[15px] leading-[1.45] md:text-[16px]">{fg}</span>
+                  <span className="text-[15px] leading-[1.45] md:text-[16px]">{label}</span>
                   <span className="shrink-0 text-[13px] text-neutral-525 md:text-[14px]">
-                    {tahun}
+                    {year}
                   </span>
                 </li>
               ))}

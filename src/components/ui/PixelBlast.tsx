@@ -626,9 +626,21 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
         passive: true
       });
       let raf = 0;
+      /* The live frame id has to go back into the ref on every tick. Teardown
+         cancels `threeRef.current.raf`, and that field used to hold the id of
+         the FIRST frame only, so the cancel was a no-op: the loop outlived
+         dispose() and forceContextLoss() and kept rendering into a dead
+         context. That surfaces as "shaderSource must be an instance of
+         WebGLShader", because createShader returns null once the context is
+         gone. It fired on every navigation away from the home page. */
       const animate = () => {
+        // Teardown nulls the ref, so a frame that slipped through stops here.
+        const self = threeRef.current;
+        if (!self) return;
+
         if (autoPauseOffscreen && !visibilityRef.current.visible) {
           raf = requestAnimationFrame(animate);
+          self.raf = raf;
           return;
         }
         uniforms.uTime.value = timeOffset + clock.getElapsedTime() * speedRef.current;
@@ -651,6 +663,7 @@ const PixelBlast: React.FC<PixelBlastProps> = ({
           composer.render();
         } else renderer.render(scene, camera);
         raf = requestAnimationFrame(animate);
+        self.raf = raf;
       };
       raf = requestAnimationFrame(animate);
       threeRef.current = {

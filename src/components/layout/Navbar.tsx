@@ -87,7 +87,7 @@ export function Navbar() {
   return (
     // `overflow-x-clip`, not `-hidden`: hidden forces the other axis to `auto`
     // and would cut off anything hanging below.
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-40 flex justify-center overflow-x-clip">
+    <header className="navbar-shell pointer-events-none fixed inset-x-0 top-0 z-40 flex justify-center overflow-x-clip">
       <nav
         aria-label="Main navigation"
         // Attributes are REMOVED when off, never set to "false" — an attribute

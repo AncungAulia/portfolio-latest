@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { getImageProps } from "next/image";
 import { notFound } from "next/navigation";
 
 import { WorkInProgress } from "@/components/ui/WorkInProgress";
@@ -19,14 +20,49 @@ function ExternalLink({ href, label }: { href: string; label: string }) {
       className="group relative inline-flex items-center gap-1.5 text-[15px] text-dark md:text-[16px]"
     >
       {label}
-      <span aria-hidden className="text-[13px] text-neutral-525">
-        &#8599;
-      </span>
+      <ArrowUpRight aria-hidden className="size-4 text-neutral-525" strokeWidth={1.8} />
       <span
         aria-hidden
         className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-dark transition-[scale] duration-300 ease-[cubic-bezier(0.4,0,0.1,1)] group-hover:scale-x-100 motion-reduce:transition-none"
       />
     </a>
+  );
+}
+
+/* The header box is 16:9 below md and 16:7 above it, so one file would always be
+   cropped: a 16:7 shot loses 22% of its width in the mobile box. Each side gets
+   its own crop instead.
+
+   `getImageProps` + `<picture>` rather than two <Image> elements: this is the
+   art-direction path in the Next docs, and it downloads ONE image. Two elements
+   toggled with `hidden` would fetch both, since a display:none <img> still
+   loads. For the same reason there is no `priority` here — that would preload
+   both sources — so the LCP hint is `fetchPriority="high"` on the <img>. */
+const HEADER_BREAKPOINT = "(min-width: 48rem)";
+
+function ProjectHeaderImage({ wide, tall }: { wide: string; tall?: string }) {
+  const shared = { alt: "", fill: true as const, sizes: "(min-width: 1152px) 1072px, 92vw" };
+
+  const {
+    props: { srcSet: wideSet },
+  } = getImageProps({ ...shared, src: wide });
+
+  const {
+    props: { srcSet: tallSet, ...rest },
+  } = getImageProps({ ...shared, src: tall ?? wide });
+
+  return (
+    <picture>
+      <source media={HEADER_BREAKPOINT} srcSet={wideSet} />
+      <source srcSet={tallSet} />
+      {/* Decorative: the project title sits directly above it. */}
+      <img
+        {...rest}
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 size-full object-cover"
+      />
+    </picture>
   );
 }
 
@@ -43,10 +79,10 @@ export async function ProjectDetail({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
   const project = findProject(slug);
 
-  // visible seperti project tanpa content.
+  // An unknown slug renders the 404 page rather than an empty shell.
   if (!project) notFound();
 
-  const { title, role, period, stack, details, header, live, github } = project;
+  const { title, role, period, stack, details, header, headerMobile, live, github } = project;
 
   return (
     <>
@@ -65,14 +101,7 @@ export async function ProjectDetail({ params }: { params: Promise<{ slug: string
           <div className="mt-12 md:mt-16">
             <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-neutral-550 md:aspect-[16/7]">
               {header ? (
-                <Image
-                  src={header}
-                  alt=""
-                  fill
-                  priority
-                  sizes="(min-width: 1152px) 1072px, 92vw"
-                  className="object-cover"
-                />
+                <ProjectHeaderImage wide={header} tall={headerMobile} />
               ) : (
                 <WorkInProgress />
               )}
@@ -111,8 +140,8 @@ export async function ProjectDetail({ params }: { params: Promise<{ slug: string
                   less than no row at all. */}
               {live || github ? (
                 <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 md:mt-10">
-                  {live ? <ExternalLink href={live} label="Live site" /> : null}
-                  {github ? <ExternalLink href={github} label="Source" /> : null}
+                  {live ? <ExternalLink href={live} label="Live Site" /> : null}
+                  {github ? <ExternalLink href={github} label="Source Code" /> : null}
                 </div>
               ) : null}
             </div>
@@ -124,9 +153,14 @@ export async function ProjectDetail({ params }: { params: Promise<{ slug: string
                 listener, and `<Link>` would navigate before it starts. */}
             <a
               href="/projects"
-              className="text-[15px] text-neutral-525 underline-offset-4 hover:text-dark hover:underline md:text-[16px]"
+              className="group inline-flex items-center gap-1.5 text-[15px] text-neutral-525 underline-offset-4 hover:text-dark hover:underline md:text-[16px]"
             >
-              &larr; All projects
+              <ArrowLeft
+                aria-hidden
+                className="size-4 transition-[translate] duration-300 ease-[cubic-bezier(0.4,0,0.1,1)] group-hover:-translate-x-0.5 motion-reduce:transition-none"
+                strokeWidth={1.8}
+              />
+              All projects
             </a>
           </div>
         </div>
