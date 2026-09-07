@@ -374,9 +374,20 @@ html:not(.intro-js) .marquee-mask {
 
   position: relative;
   height: var(--height);
-  overflow: hidden;
 
+  /* Kartu di tepi layar menukik lebih rendah dari tinggi jendela. Dipotong
+     mendatar bikin kartu terpenggal, jadi hanya sumbu X yang diklip (menahan
+     lengan roda yang menjulur ke samping supaya halaman tidak geser
+     mendatar); sumbu Y dibiarkan meluber. `clip` + `visible` sah dipasangkan,
+     `hidden` + `visible` tidak — nilainya akan dipaksa jadi `auto`. */
+  overflow-x: clip;
+  overflow-y: visible;
+
+  /* Bertumpuk di atas grid proyek di bawahnya (kartunya `relative`, jadi tanpa
+     ini kartu grid yang menang karena urutan DOM). Cukup 1: navbar duduk di
+     z-40 dan kursor di z-60, keduanya tetap di atas roda. */
   isolation: isolate;
+  z-index: 1;
 }
 
 @media (min-width: 48rem) {
